@@ -484,3 +484,44 @@ def test_ignore():
 
     # cleanup
     os.remove("ignoredPosts.txt")
+
+
+def test_blacklist():
+    """
+    Create a throwaway Git branch and switch to that for the duration of
+    the test.
+    """
+    from sh import git, ErrorReturnCode
+
+    def spamtest(url):
+        from spamhandling import check_if_spam
+        #check_if_spam(title, body, username, user_url, site, post_id,
+        #  is_answer, body_is_summary, owner_rep, post_score)
+        is_spam, reason, _ = check_if_spam(
+            "", url, "", "", "", 0, True, False, 1, 0)
+        return is_spam, reason
+
+    # Save whatever is in progress right now
+    git.stash.save()
+    # Delete any previous branch with this name; ignore failure if nonexistent
+    git.branch('-D', 'temp-test-blacklist', _ok_code=1)
+    # Now create a new branch from this stash and commit whatever is there
+    git.stash.branch('temp-test-blacklist')
+    git.commit('-a', '-m', 'save any work in progress before testing')
+
+    # Now test
+    is_spam, reason = spamtest("http://stackoverflow.com/")
+    assert is_spam is False, \
+        '"Before" test should not indicate SO as blacklisted'
+
+    blacklist_event = mock_event(
+        r'!!/blacklist stackoverflow\.com', 1,
+        11540, 'Charcoal HQ',
+        59776, u"Doorknob 冰")
+    watcher(blacklist_event, client.Client())
+
+    is_spam, reason = spamtest("http://stackoverflow.com/")
+    assert is_spam is True, 'Blacklisting SO URL did not seem to have succeeded'
+
+    # Finally, revert changes
+    git.stash.pop()
