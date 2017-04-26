@@ -188,6 +188,220 @@ def has_health(s, site, *args):   # flexible detection of health spam in titles
 
 
 # noinspection PyUnusedLocal,PyMissingTypeHints
+def has_thanks_nice_blog(s, site, *args):
+    """
+    A collection of phrases used by comment spammers.
+    """
+    # A good collection was leaked by a spammer here:
+    # https://metasmoke.erwaysoftware.com/post/66147
+    phrases = [
+        "I have to thank you for the efforts you have put in writing this site",
+        "I really hope to see the same high-grade content by you in the future as well",
+        "In fact, your creative writing abilities has inspired me to get my very own website now",
+        "I'm more than happy to uncover this website",
+        "I wanted to thank you for your time for this fantastic read",
+        "I definitely appreciated every part of it and i also have you bookmarked to see new information in your blog",
+
+        "May I simply say what a relief to discover a person that"
+        " actually understands what they are talking about online",
+        "You definitely realize how to bring a problem to light and make it important",
+        "More and more people need to read this and understand this side of your story",
+        "I can't believe you aren't more popular since you definitely have the gift",
+
+        "Very nice article",
+        "I absolutely love this website",
+        "Continue the good work!",
+
+        "It’s hard to come by experienced people in this particular topic,"
+        " however, you sound like you know what you’re talking about",
+
+        "You need to take part in a contest for one of the most useful blogs on the web",
+        "I most certainly will highly recommend this web site",
+
+        "An intriguing discussion is definitely worth comment",
+        "There's no doubt that that you should write more about this issue",
+        "it might not be a taboo matter but generally people don't speak about such subjects",
+        "To the next!",  # keep exclam here
+        "All the best!!",
+
+        # "Hey there!",
+        "I simply want to offer you a big thumbs up for the excellent information you have here on this post",
+        "I will be returning to your web site for more soon",
+
+        "When I originally left a comment I appear to have clicked on the"
+        " -Notify me when new comments are added- checkbox and now every time"
+        " a comment is added I recieve four emails with the same comment",
+        "There has to be a way you are able to remove me from that service",
+        # Thank you!</p>
+
+        "The next time I read a blog, Hopefully it won't fail me as much as this one",
+        "After all, Yes, it was my choice to read, however I truly thought you"
+        " would probably have something interesting to talk about",
+        "All I hear is a bunch of moaning about something that you could fix if you weren't too busy seeking attention",
+
+        "Spot on with this write-up, I truly think this website needs far more attention",
+        "I’ll probably be back again to see more, thanks for the advice",
+
+        "You are so awesome",
+        "I don't think I've truly read a single thing like this before",
+        "So nice to find someone with unique thoughts on this topic",
+        "Really.. many thanks for starting this up",
+        "This site is something that's needed on the web, someone with some originality",
+
+        "I quite like reading through a post that can make people think",
+        "Also, many thanks for allowing me to comment",
+
+        "This is the right blog for anyone who would like to find out about this topic",
+        "You understand so much its almost tough to argue with you (not that I really will need to…HaHa)",
+        "You definitely put a new spin on a subject which has been written about for many years",
+        "Great stuff, just excellent",
+
+        "Aw, this was an extremely good post",
+        "Finding the time and actual effort to generate a really good article…",
+        "but what can I say…",
+        "I hesitate a whole lot and never seem to get nearly anything done",
+
+        "I’m impressed, I have to admit",
+        "Seldom do I encounter a blog that’s equally educative and engaging,"
+        " and without a doubt, you have hit the nail on the head",
+        "The issue is something which not enough folks are speaking intelligently about",
+        "Now i'm very happy I found this in my search for something concerning this",
+
+        "Oh my goodness",
+        "Amazing article dude",
+        "Thank you so much, However I am experiencing troubles with your RSS",
+        "I don’t understand the reason why I am unable to join it",
+        "Is there anybody having the same RSS problems",
+        "Anyone that knows the solution will you kindly respond",
+
+        "An outstanding share",
+        "I have just forwarded this onto a friend who has been conducting a little research on this",
+        "And he in fact ordered me breakfast due to the fact that I discovered it for him",
+        "So allow me to reword this",
+        "Thanks for the meal",
+        "But yeah, thanx for spending time to talk about this topic here on your site",
+
+        "After looking at a few of the blog articles on your web site, I truly appreciate your way of writing a blog",
+        "I book-marked it to my bookmark website list and will be checking back in the near future",
+        "Please check out my web site too and let me know what you think",
+
+        "This site really has all the information I needed concerning this subject and didn’t know who to ask",
+
+        "There's definately a great deal to find out about this subject",
+        "I like all of the points you've made",
+
+        "You made some really good points there",
+        "I checked on the net for additional information about the issue and"
+        " found most individuals will go along with your views on this web site",
+
+        # "Nice post",
+        "I learn something new and challenging on sites I stumbleupon every day",
+        "It's always helpful to read through articles from other authors and practice something from other websites",
+
+        "I blog quite often and I truly thank you for your information",
+        "This article has really peaked my interest",
+        "I am going to book mark your website and keep checking for new information about once per week",
+        "I opted in for your RSS feed as well",
+
+        "Pretty!",
+        "This was a really wonderful post",
+        "Many thanks for providing this information",
+
+        # "Greetings!",
+        "Very helpful advice in this particular article",
+        "It is the little changes that make the most important changes",
+        "Thanks a lot for sharing!",
+
+        # "Hi there!",
+        "This post could not be written any better",
+        "Looking at this article reminds me of my previous roommate",
+        "He always kept talking about this",
+        "I am going to send this post to him",
+        "Pretty sure he'll have a great read",
+        "Many thanks for sharing!",
+
+        "Greetings, I do believe your web site may be having web browser compatibility issues",
+        "Whenever I take a look at your web site in Safari, it looks fine"
+        " however, when opening in IE, it's got some overlapping issues",
+        "I simply wanted to give you a quick heads up",
+        "Other than that, excellent site",
+
+        "Having read this I believed it was really informative",
+        "I appreciate you taking the time and energy to put this short article together",
+        "I once again find myself spending a significant amount of time both reading and commenting",
+        "But so what, it was still worthwhile",
+
+        # "Hello there!",
+        "I could have sworn I’ve been to this site before but after"
+        " going through a few of the posts I realized it’s new to me",
+        "Nonetheless, I’m certainly pleased I discovered it and I’ll be book-marking it and checking back frequently",
+
+        "I want to to thank you for this great read",
+        "I certainly loved every little bit of it",
+        "I have got you bookmarked to look at new things you post…",
+
+        "Hi, I do believe this is an excellent blog",
+        "I stumbledupon it",
+        "I'm going to come back once again since I book marked it",
+        "Money and freedom is the best way to change, may you be rich and continue to help other people",
+
+        "Your style is very unique in comparison to other folks I've read stuff from",
+        "Many thanks for posting when you have the opportunity",
+        "Guess I will just bookmark this web site",
+
+        "I was able to find good advice from your blog articles",
+
+        # "Great post!",
+        "We are linking to this great content on our website",
+        "Keep up the great writing",
+
+        "That is a great tip especially to those fresh to the blogosphere",
+        "Simple but very accurate information…",
+        "Appreciate your sharing this one",
+        "A must read article!",
+
+        "I could not resist commenting",
+        "Well written!",
+
+        "Saved as a favorite",
+        "I really like your web site",
+
+        "Excellent post",
+        "I'm going through many of these issues as well",
+
+        "Way cool!",
+        "Some very valid points",
+        "I appreciate you penning this write-up plus the rest of the site is really good",
+
+        "Excellent blog you have got here",
+        "It’s difficult to find high quality writing like yours nowadays",
+        "I truly appreciate individuals like you",
+        "Take care!!",
+
+        "This is a topic that's near to my heart",
+        # "Many thanks!",
+        "Exactly where are your contact details though",
+
+        "I seriously love your site",
+        "Excellent colors & theme",
+        "Did you make this web site yourself",
+        "Please reply back as I’m trying to create my very own site and want"
+        " to know where you got this from or exactly what the theme is called",
+        # Many thanks!</p>
+
+        "I like it when people come together and share views",
+        "Great site, continue the good work",
+    ]
+    matches = regex.compile(r'\b\L<phrases>[.,!?\s\b<]', regex.UNICODE,
+                            phrases=phrases).findall(s)
+    if matches:
+        return True, u"Bad fragment in link {}".format(
+            ", ".join(["".join(match) for match in matches]))
+    else:
+        return False, ""
+
+
+# noinspection PyUnusedLocal,PyMissingTypeHints
 def pattern_product_name(s, site, *args):
     keywords = ["Testo?", "Dermapholia", "Garcinia", "Cambogia", "Aurora", "Kamasutra", "HL-?12", "NeuroFuse",
                 "Junivive", "Apexatropin", "Gain", "Allure", "Nuvella", "Trimgenix", "Satin", "Prodroxatone",
@@ -945,7 +1159,14 @@ class FindSpam:
         {'method': similar_answer, 'all': True, 'sites': ["codegolf.stackexchange.com"],
          'reason': "answer similar to existing answer on post", 'whole_post': True,
          'title': False, 'body': False, 'username': False, 'stripcodeblocks': False,
-         'max_rep': 50, 'max_score': 0}
+         'max_rep': 50, 'max_score': 0},
+
+        # Dictionary of blog spam phrases
+        {'method': has_thanks_nice_blog, 'all': True, 'sites': [],
+         'reason': 'match on common blog spam phrases',
+         'whole_post': False, 'title': False, 'body': True, 'username': False,
+         'stripcodeblocks': False, 'body_summary': False,
+         'max_rep': 1, 'max_score': 1},
     ]
 
     @staticmethod
