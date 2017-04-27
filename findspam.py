@@ -188,7 +188,7 @@ def has_health(s, site, *args):   # flexible detection of health spam in titles
 
 
 # noinspection PyUnusedLocal,PyMissingTypeHints
-def has_thanks_nice_blog(s, site, *args):
+def has_blog_spam_phrase(s, site, *args):
     """
     A collection of phrases used by comment spammers.
     """
@@ -1162,8 +1162,8 @@ class FindSpam:
          'max_rep': 50, 'max_score': 0},
 
         # Dictionary of blog spam phrases
-        {'method': has_thanks_nice_blog, 'all': True, 'sites': [],
-         'reason': 'match on common blog spam phrases',
+        {'method': has_blog_spam_phrase, 'all': True, 'sites': [],
+         'reason': 'match on common blog spam phrase',
          'whole_post': False, 'title': False, 'body': True, 'username': False,
          'stripcodeblocks': False, 'body_summary': False,
          'max_rep': 1, 'max_score': 1},
