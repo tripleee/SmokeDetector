@@ -2,17 +2,19 @@
 
 import os
 from datetime import datetime
-from chatexchange_extension import Client
 from html.parser import HTMLParser
 from hashlib import md5
 from configparser import NoOptionError, RawConfigParser
-from helpers import environ_or_none, log
 import threading
+import subprocess as sp
+import platform
+
 # noinspection PyCompatibility
 import regex
-import subprocess as sp
 from dulwich.repo import Repo
-import platform
+
+from chatexchange_extension import Client
+from helpers import environ_or_none, log
 
 
 def git_commit_info():
