@@ -4,6 +4,7 @@ import json
 from collections import defaultdict
 
 import requests
+# actually requires websocket-client
 import websocket
 
 from deepsmoke import check_deepsmoke
