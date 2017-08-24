@@ -29,6 +29,8 @@ def fetch_post(site, post_id):
 
     if 'items' in response_json:
         ######## TODO: somehow signal when we are out of requests
+        if len(response_json['items']) == 0:
+            raise Exception('no items provided in API response {0!r}'.format(response_json))
         logging.info("{0} requests remaining".format(
             response_json['quota_remaining']))
         return response_json['items'][0]
