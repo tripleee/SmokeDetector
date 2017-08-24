@@ -12,9 +12,13 @@ import websocket
 from deepsmoke import check_deepsmoke
 
 
+class FetchPostRetryError (Exception):
+    pass
+
+
 # ######## FIXME: this is a copy/paste of code from sdml/bodyfetcher.py
 
-def fetch_post(site, post_id):
+def fetch_post(site, post_id, noretry=False):
     request_key = 'X2IphbAw)by6tgOGvQkI1w(('
     filter_key = '!Su916j_llPnZTl4o7X'
     response = requests.get("https://api.stackexchange.com/2.2/questions/{0}?site={1}&key={2}&filter={3}"
@@ -29,10 +33,15 @@ def fetch_post(site, post_id):
 
     if 'items' in response_json:
         if len(response_json['items']) == 0:
-            logging.warn('Empty response, sleep and retry {0}:{1}'.format(
-                site, post_id))
-            time.sleep(1)
-            return fetch_post(site, post_id)
+            if noretry:
+                raise FetchPostRetryError(
+                    'Repeated empty response, aborting {0}:{1}'.format(
+                        site, post_id))
+            else:
+                logging.warn('Empty response, sleep and retry {0}:{1}'.format(
+                    site, post_id))
+                time.sleep(1)
+                return fetch_post(site, post_id, noretry=True)
         ######## TODO: somehow signal when we are out of requests
         logging.info("{0} requests remaining".format(
             response_json['quota_remaining']))
@@ -80,7 +89,7 @@ def fetch(logger=None):
             try:
                 full_data = fetch_post(
                     post_data['siteBaseHostAddress'], post_data['id'])
-            except (IndexError, SSLEOFError) as err:
+            except (IndexError, SSLEOFError, FetchPostRetryError) as err:
                 logger.warn(
                     'fetch_post({0}, {1}) failed: {2}'.format(
                         post_data['siteBaseHostAddress'], post_data['id'], err))
