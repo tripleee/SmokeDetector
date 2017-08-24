@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import time
 import logging
 import json
@@ -122,7 +124,7 @@ def main():
         try:
             for post in fetch():
                 deepsmoke, why = check_deepsmoke(post['body'], post['site'])
-                logging.info('{0} {1}'.format(deepsmoke, post['body'][0:270]))
+                logging.info('{0} {1!r}'.format(deepsmoke, post['body'][0:270]))
                 if deepsmoke:
                     counter.spam_hit()
                 post['deepsmoke'] = [deepsmoke, why]
