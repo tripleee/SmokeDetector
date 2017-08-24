@@ -42,7 +42,7 @@ def fetch(logger=None):
     Generator to set up web socket and retrieve posts.  Yield each.
     """
     from ssl import SSLEOFError
-    
+
     if logger == None:
         import logging
         logger = logging
@@ -95,11 +95,16 @@ class SillyCounter (object):
         self.count = 0
         self.sitehits = defaultdict(int)
 
+    def spam_hit(self):
+        self.sitehits['__spam__'] += 1
+
     def hits_info(self, site):
         self.count += 1
         self.sitehits[site] += 1
-        self.logger.info('{0} items downloaded; total for {1}: {2}'.format(
-            self.count, site, self.sitehits[site]))
+        self.logger.info('{0} items downloaded ({3} spam);'
+            ' total for {1}: {2}'.format(
+                self.count, site, self.sitehits[site],
+                    self.sitehits['__spam__']))
 
 
 def main():
@@ -118,6 +123,8 @@ def main():
             for post in fetch():
                 deepsmoke, why = check_deepsmoke(post['body'], post['site'])
                 logging.info('{0} {1}'.format(deepsmoke, post['body'][0:270]))
+                if deepsmoke:
+                    counter.spam_hit()
                 post['deepsmoke'] = [deepsmoke, why]
                 print(json.dumps(post), file=output)
                 counter.hits_info(post['site'])
