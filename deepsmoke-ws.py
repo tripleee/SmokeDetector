@@ -28,9 +28,12 @@ def fetch_post(site, post_id):
         time.sleep(response_json['backoff'])
 
     if 'items' in response_json:
-        ######## TODO: somehow signal when we are out of requests
         if len(response_json['items']) == 0:
-            raise Exception('no items provided in API response {0!r}'.format(response_json))
+            logging.warn('Empty response, sleep and retry {0}:{1}'.format(
+                site, post_id))
+            time.sleep(1)
+            return fetch_post(site, post_id)
+        ######## TODO: somehow signal when we are out of requests
         logging.info("{0} requests remaining".format(
             response_json['quota_remaining']))
         return response_json['items'][0]
