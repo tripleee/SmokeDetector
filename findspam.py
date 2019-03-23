@@ -1236,11 +1236,8 @@ def watched_asn_for_url_hostname(s, site):
 
 @create_rule('Problematic URL hosts in {}', title=False, stripcodeblocks=True)
 def problematic_hosts(s, site):
-    suspicious_links = list(filter(lambda x: x.endswith((
-        # Sites where the OPs might have accounts
-        '.facebook.com',
-        '.medium.com',
-        '.sites.google.com',
+    links = post_hosts(s, check_tld=True)
+    suspicious_links = set(filter(lambda x: x.endswith((
         # Special case, enumerate all of blogspot here eventually ...?
         '.blogspot.be',
         '.blogspot.bg',
@@ -1285,22 +1282,51 @@ def problematic_hosts(s, site):
         '.hatenablog.com',
         '.jigsy.com',
         '.jimdo.com',
+        '.kinja.com',  # only 6 sites
         '.over-blog.com',
         '.page.tl',
         '.quora.com',
         '.simplesite.com',
         '.soup.io',  # only 6 sites
+        '.strikingly.com',
         '.tumblr.com',
         '.webstarts.com',  # only 6 sites
         '.weebly.com',
         '.wixsite.com',
         '.wordpress.com',
         '.yolasite.com',
-        ))), post_hosts(s, check_tld=True))
-    if len(suspicious_links) < 3:
-        return False
+        '.zohosites.com',
+        '.zohosites.in',
+        )), links))
+    if not suspicious_links:
+        return False, ""
+    additional_suspicious = set(filter(lambda x: x.endswith((
+        # Sites where the OPs might have accounts
+        'angel.co',  # only 2 samples
+        'colourlovers.com',  # only 6 samples
+        '.dailymotion.com',
+        '.evensi.com',
+        '.evensi.us',
+        '.facebook.com',
+        '.indiehackers.com',
+        '.linkedin.com',
+        'medium.com',
+        'sites.google.com',
+        '.pinterest.co.uk',
+        '.pinterest.com',
+        'sportsblog.com',
+        'twitter.com',
+        '.weheartit.com',
+        'works.bepress.com',
+        'youtu.be',
+        '.youtube.com',
+        )), links))
+    if len(suspicious_links) >= 3 or (
+            len(suspicious_links) >= 2 and len(additional_suspicious) >= 1):
+        return True, "suspicious hosts in URLs: {0}".format(
+            set(suspicious_links + additional_suspicious))
     # else
-    return True, "suspicious hosts in URLs: {0}".format(suspicious_links)
+    return False, ""
 
 
 @create_rule("offensive {} detected", body_summary=True, max_rep=101, max_score=2, stripcodeblocks=True)
