@@ -1234,6 +1234,75 @@ def watched_asn_for_url_hostname(s, site):
         ])
 
 
+@create_rule('Problematic URL hosts in {}', title=False, stripcodeblocks=True)
+def problematic_hosts(s, site):
+    suspicious_links = list(filter(lambda x: x.endswith((
+        # Sites where the OPs might have accounts
+        '.facebook.com',
+        '.medium.com',
+        '.sites.google.com',
+        # Special case, enumerate all of blogspot here eventually ...?
+        '.blogspot.be',
+        '.blogspot.bg',
+        '.blogspot.ca',
+        '.blogspot.ch',
+        '.blogspot.cz',
+        '.blogspot.co',
+        '.blogspot.co.id',
+        '.blogspot.co.il',
+        '.blogspot.co.nz',
+        '.blogspot.co.uk',
+        '.blogspot.com',
+        '.blogspot.com.au',
+        '.blogspot.com.br',
+        '.blogspot.com.eg',
+        '.blogspot.com.es',
+        '.blogspot.com.ng',
+        '.blogspot.com.tr',
+        '.blogspot.de',
+        '.blogspot.fi',
+        '.blogspot.fr',
+        '.blogspot.gr',
+        '.blogspot.ie',
+        '.blogspot.in',
+        '.blogspot.it',
+        '.blogspot.kr',
+        '.blogspot.md',
+        '.blogspot.mx',
+        '.blogspot.my',
+        '.blogspot.nl',
+        '.blogspot.pt',
+        '.blogspot.ru',
+        '.blogspot.se',
+        '.blogspot.sg',
+        '.blogspot.sk',
+        '.blogspot.tw',
+        # Sites which allow for subdomains
+        '.aircus.com',  # only 4 samples
+        '.bravesites.com',
+        '.classtell.com',  # only 8 sites
+        '.emyspot.com',  # ohnly 5 sites
+        '.hatenablog.com',
+        '.jigsy.com',
+        '.jimdo.com',
+        '.over-blog.com',
+        '.page.tl',
+        '.quora.com',
+        '.simplesite.com',
+        '.soup.io',  # only 6 sites
+        '.tumblr.com',
+        '.webstarts.com',  # only 6 sites
+        '.weebly.com',
+        '.wixsite.com',
+        '.wordpress.com',
+        '.yolasite.com',
+        ))), post_hosts(s, check_tld=True))
+    if len(suspicious_links) < 3:
+        return False
+    # else
+    return True, "suspicious hosts in URLs: {0}".format(suspicious_links)
+
+
 @create_rule("offensive {} detected", body_summary=True, max_rep=101, max_score=2, stripcodeblocks=True)
 def is_offensive_post(s, site):
     if not s:
