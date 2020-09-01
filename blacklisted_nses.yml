@@ -93,3 +93,4 @@ items:
 - comment: no longer in DNS 2020-04-02
   disable: true
   ns: utecho.com.
+- ns: github.com.
