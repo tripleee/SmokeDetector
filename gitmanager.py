@@ -119,6 +119,10 @@ class GitManager:
 
             now = str(int(time.time()))
 
+            if not hasattr(blacklister, 'watchtype'):
+                raise AttributeError('no .watchtype() for %s (%s) (%s)'.format(
+                    blacklister, type(blacklister),
+                    blacklister.get('_filename', '(no _filename)')))
             if blacklister.watchtype():
                 op = 'watch'
             else:
