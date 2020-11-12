@@ -648,23 +648,3 @@ class PhoneBlacklist(PhoneMixin, Blacklist):
 
 class PhoneWatchlist(PhoneMixin, WatchMixin, Blacklist):
     pass
-
-
-'''
-if __name__ == '__main__':
-    load_blacklists()
-    blacklist_id = Blacklist.resolve('watch-ip')
-    print(blacklist_id)
-    blacklister = GlobalVars.git_black_watch_lists[blacklist_id]
-    exists, line = blacklister.exists('103.10.200.62')
-    print(exists, line)
-    print('****')
-# """
-    for name, bwlist in GlobalVars.git_black_watch_lists.items():
-        print('{0} type: {1}'.format(name, type(bwlist)))
-        for method in ('regextype', 'numbertype', 'watchtype', 'not_reject_reasons'):
-            print('{0}.{1}() = {2}'.format(bwlist.filename(), method, getattr(bwlist, method)()))
-        for item in bwlist.each():
-            print('each[0]: %r' % item)
-            break
-'''
