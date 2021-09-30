@@ -1265,13 +1265,15 @@ def ns_for_url_domain(s, site, nslist):
                 assert nsentry.endswith('.'),\
                     "Missing final dot on NS entry {0}".format(nsentry)
 
-    domains = []
+    domains = set()
     for hostname in post_hosts(s, check_tld=True):
         if hostname in WHITELISTED_NS_HOSTNAMES:
             continue
-        domains.append(get_domain(hostname, full=True))
+        if regex.match(r'^\d+\.\d+\.\d+\.\d+$', hostname):
+            continue
+        domains.add(get_domain(hostname, full=True))
 
-    for domain in set(domains):
+    for domain in domains:
         if domain in WHITELISTED_NS_HOSTNAMES:
             continue
         ns = dns_query(domain, 'ns')
@@ -1291,6 +1293,9 @@ def get_ns_ips(domain):
     Extract IP addresses of name server(s) for a domain
     """
     ns_ips = []
+    if regex.match(r'^\d+\.\d+\.\d+\.\d+$', domain):
+        log('info', 'Not performing NS query for IP %s' % (domain))
+        return []
     dom = tld.get_tld(
         domain, fix_protocol=True, as_object=True, fail_silently=True)
     if not dom:
@@ -1314,6 +1319,9 @@ def ns_is_host(s, site):
     '''
     for hostname in post_hosts(s, check_tld=True):
         if metasmoke_cache.is_website_whitelisted(hostname):
+            continue
+        if regex.match(r'^\d+\.\d+\.\d+\.\d+$', hostname):
+            log('debug', 'Not performing A query for IP %s' % (hostname))
             continue
         host_ip = dns_query(hostname, 'a')
         if host_ip is None:
@@ -1342,6 +1350,11 @@ def ip_for_url_host(s, site, ip_list):
     # ######## FIXME: code duplication
     for hostname in post_hosts(s, check_tld=True):
         if hostname in WHITELISTED_IP_HOSTNAMES:
+            continue
+        if regex.match(r'^\d+\.\d+\.\d+\.\d+$', hostname):
+            log('debug', 'Not resolving IP-only hostname %s' % (hostname))
+            if hostname in ip_list:
+                return True, 'suspicious IP address {0}'.format(hostname)
             continue
         a = dns_query(hostname, 'a')
         if a is not None:
@@ -1523,7 +1536,10 @@ def post_hosts(post, check_tld=False):
             continue
 
         if check_tld:
-            if not tld.get_tld(hostname, fix_protocol=True, fail_silently=True):
+            if regex.match(r'^\d+\.\d+\.\d+\.\d+$', hostname):
+                log('debug', 'Apparent IP-only hostname')
+            elif not tld.get_tld(
+                    hostname, fix_protocol=True, fail_silently=True):
                 log('debug', '{0} has no valid tld; skipping'.format(hostname))
                 invalid_tld_count += 1
                 if invalid_tld_count > 3:

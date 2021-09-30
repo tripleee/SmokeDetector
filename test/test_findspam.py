@@ -137,11 +137,17 @@ def test_findspam(title, body, username, site, body_is_summary, is_answer, expec
 @pytest.mark.parametrize("title, body, username, expected_spam", [
     ('A title', '<p><a href="https://triple.ee/ns-test">foo</a>', 'tripleee', True),
     ('A title', '<p><a href="https://www.triple.ee/ns-test">foo</a>', 'tripleee', True),
+    ('IP-only hack', '<p><a href="https://XXX/ip-test">foo</a>', 'tripleee', True),
     ('A title', '<p><a href="https://charcoal-se.org/ns-test">foo</a>', 'tripleee', False),
 ])
 def test_ns(title, body, username, expected_spam):
     blacklisted_ip = get_ns_ips('triple.ee')[0]
     site = 'stackoverflow.com'
+    expected = ' suspicious IP address {0} for NS'.format(blacklisted_ip)
+    # Hack for IP template
+    if '/XXX/' in body:
+        body = body.replace('/XXX/', '/%s/' % blacklisted_ip)
+        expected = 'suspicious IP address {0}'.format(blacklisted_ip)
     # post = Post(api_response={'title': title, 'body': body,
     #                          'owner': {'display_name': username, 'reputation': 1, 'link': ''},
     #                          'site': site, 'question_id': '1', 'IsAnswer': False,
@@ -149,4 +155,5 @@ def test_ns(title, body, username, expected_spam):
     what, why = ip_for_url_host(body, site, [blacklisted_ip])
     assert what is expected_spam
     if expected_spam:
-        assert ' suspicious IP address {0} for NS'.format(blacklisted_ip) in why
+        assert expected in why, "wanted '{0}' but got '{1}' for {2}".format(
+            expected, why, body)
